@@ -21,10 +21,10 @@
 - [x] Add timezone support
 - [x] Validate date formats
 - [x] Compare dates with current time
-- [ ] Handle invalid date formats
+- [x] Handle invalid date formats
 
 ### Phase 3: PR Dependency Validation
-- [ ] Check PR existence
+- [x] Check PR existence
 - [ ] Verify PR merge status
 - [ ] Handle cross-repository PRs
 - [ ] Add caching for PR status checks
