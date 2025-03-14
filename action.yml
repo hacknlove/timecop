@@ -1,0 +1,18 @@
+name: "TimeCop"
+description: "Ensures PRs meet dependency and date requirements before merging"
+author: "[Your Name/Organization]"
+
+inputs:
+  github-token:
+    description: "GitHub token for API access"
+    required: true
+    default: ${{ github.token }}
+  # We'll add more inputs based on your requirements
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
+
+branding:
+  icon: "shield"
+  color: "blue" 

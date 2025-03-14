@@ -1,0 +1,1 @@
+export { collectFromLabels } from './label';
