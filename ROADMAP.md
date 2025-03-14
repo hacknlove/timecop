@@ -4,9 +4,9 @@
 - Implementing requirement collectors
   - [x] Basic project setup
   - [x] Label collector implementation
-  - [ ] Label collector tests
-  - [ ] Description collector
-  - [ ] Commit message collector
+  - [x] Label collector tests
+  - [x] Description collector
+  - [x] Commit message collector
 
 ## 🎯 Upcoming Tasks
 
