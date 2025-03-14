@@ -46,7 +46,7 @@ merged: https://github.com/org/repo/pull/123
 ```
 feat: implement new feature
 
-MERGE REQUIREMENTS:
+## MERGE REQUIREMENTS:
 * after: 2024-01-15
 * merged: https://github.com/org/repo/pull/123
 ```
