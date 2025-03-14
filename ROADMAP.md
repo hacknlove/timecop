@@ -11,8 +11,8 @@
 ## 🎯 Upcoming Tasks
 
 ### Phase 1: Core Collectors
-- [ ] Add error handling for malformed requirements
-- [ ] Add validation for requirement formats
+- [x] Add error handling for malformed requirements
+- [x] Add validation for requirement formats
 - [ ] Implement requirement priority system
 - [ ] Add debug logging for requirement collection
 
