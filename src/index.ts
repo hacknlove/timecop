@@ -26,13 +26,35 @@ export async function validatePullRequest(
     reasons: [],
   };
 
-  // Group requirements by type
+  // Group requirements by type and source
   const dateReqs = requirements.filter((req) => req.type === 'date');
   const dependencyReqs = requirements.filter((req) => req.type === 'dependency');
 
-  // For dates, we only care about the highest priority one
-  if (dateReqs.length > 0) {
-    const highestPriorityDate = dateReqs.reduce((prev, current) =>
+  // First, group dates by source
+  const datesBySource = dateReqs.reduce(
+    (acc, req) => {
+      if (!acc[req.source]) {
+        acc[req.source] = [];
+      }
+      acc[req.source].push(req);
+      return acc;
+    },
+    {} as Record<string, MergeRequirement[]>
+  );
+
+  // For each source, find the most restrictive date (furthest in the future)
+  const mostRestrictiveDates = Object.entries(datesBySource).map(([source, dates]) => {
+    const mostRestrictive = dates.reduce((prev, current) => {
+      const prevDate = new Date(prev.value);
+      const currDate = new Date(current.value);
+      return prevDate > currDate ? prev : current;
+    });
+    return mostRestrictive;
+  });
+
+  // If we have any dates, check the one with highest priority
+  if (mostRestrictiveDates.length > 0) {
+    const highestPriorityDate = mostRestrictiveDates.reduce((prev, current) =>
       current.priority > prev.priority ? current : prev
     );
 
