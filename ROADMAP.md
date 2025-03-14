@@ -20,7 +20,7 @@
 - [x] Implement date parsing
 - [x] Add timezone support
 - [x] Validate date formats
-- [ ] Compare dates with current time
+- [x] Compare dates with current time
 - [ ] Handle invalid date formats
 
 ### Phase 3: PR Dependency Validation
