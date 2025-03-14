@@ -13,8 +13,8 @@
 ### Phase 1: Core Collectors
 - [x] Add error handling for malformed requirements
 - [x] Add validation for requirement formats
-- [ ] Implement requirement priority system
-- [ ] Add debug logging for requirement collection
+- [x] Implement requirement priority system
+- [x] Add debug logging for requirement collection
 
 ### Phase 2: Date Validation
 - [ ] Implement date parsing
