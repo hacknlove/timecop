@@ -1,3 +1,5 @@
+This is just to have an open PR for testing purposes.
+
 # TimeCop
 
 A GitHub Action that enforces PR merge requirements based on dependencies and dates. It prevents PRs from being merged until:
