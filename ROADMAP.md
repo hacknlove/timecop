@@ -34,26 +34,8 @@
 - [x] Add caching for PR status checks
 - [x] Handle rate limiting
 
-### Phase 4: Testing & Documentation
 
-- [x] Unit tests for all collectors
-- [x] Integration tests
-- [ ] Mock GitHub API responses
-- [ ] Add test coverage reporting
-- [ ] Update documentation with examples
-
-### Phase 5: Enhancements
-
-- [ ] Add configuration options
-  - [ ] Custom date formats
-  - [ ] Custom requirement prefixes
-  - [ ] Source priority override
-- [ ] Add detailed error messages
-- [ ] Add status checks API integration
-- [ ] Add PR comment support
-- [ ] Add requirement summary in PR
-
-### Phase 6: Release & Maintenance
+### Phase 4: Release & Maintenance
 
 - [ ] First beta release
 - [ ] GitHub Action marketplace publication
