@@ -4,7 +4,9 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { parsePullRequestUrl } from './utils/url-parser';
 import { MergeRequirement, ValidationResult } from './types';
-import { collectFromLabels } from './collectors';
+import { collectFromLabels, collectFromDescription, collectFromCommits } from './collectors';
+import { prioritizeRequirements } from './utils/priority';
+import { logPrioritizedRequirements } from './utils/logger';
 
 // TODO: Use these priority values when implementing requirement collection
 // eslint-disable-next-line
@@ -68,15 +70,41 @@ async function run(): Promise<void> {
       return;
     }
 
-    // Collect requirements from labels
-    const requirements = await collectFromLabels(
+    // Collect requirements from all sources
+    const labelRequirements = await collectFromLabels(
+      octokit,
+      context.repo.owner,
+      context.repo.repo,
+      context.payload.pull_request.number
+    );
+    
+    const descriptionRequirements = await collectFromDescription(
+      octokit,
+      context.repo.owner,
+      context.repo.repo,
+      context.payload.pull_request.number
+    );
+    
+    const commitRequirements = await collectFromCommits(
       octokit,
       context.repo.owner,
       context.repo.repo,
       context.payload.pull_request.number
     );
 
-    const validationResult = await validatePullRequest(octokit, requirements);
+    // Combine and prioritize requirements
+    const allRequirements = [
+      ...labelRequirements,
+      ...descriptionRequirements,
+      ...commitRequirements
+    ];
+    
+    const prioritizedRequirements = prioritizeRequirements(allRequirements);
+    
+    // Log requirements for debugging
+    logPrioritizedRequirements(prioritizedRequirements);
+
+    const validationResult = await validatePullRequest(octokit, prioritizedRequirements);
 
     if (!validationResult.canMerge) {
       core.setFailed(validationResult.reasons.join('\n'));
