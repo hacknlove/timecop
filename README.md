@@ -18,7 +18,7 @@ jobs:
   check-requirements:
     runs-on: ubuntu-latest
     steps:
-      - uses: gmsllc/timecop@v1
+      - uses: hacknlove/timecop@v1
 ```
 
 ## Setting Requirements

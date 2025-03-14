@@ -7,7 +7,7 @@ Thank you for your interest in contributing to TimeCop! This document provides g
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/gmsllc/timecop.git
+git clone https://github.com/hacknlove/timecop.git
 cd timecop
 ```
 
