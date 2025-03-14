@@ -23,6 +23,30 @@ npm install
 npm run build
 ```
 
+## Project Structure
+
+```
+.
+├── src/
+│   ├── index.ts              # Main entry point
+│   ├── types.ts              # Shared type definitions
+│   ├── collectors/           # Requirement collectors
+│   │   ├── label.ts         # Label-based requirements
+│   │   ├── description.ts   # PR description requirements
+│   │   └── commit.ts        # Commit message requirements
+│   └── utils/               # Utility functions
+│       ├── github-client.ts # GitHub API interactions
+│       ├── pr-validator.ts  # PR validation logic
+│       ├── date-parser.ts   # Date parsing and validation
+│       └── timezone.ts      # Timezone handling
+├── __tests__/               # Test files
+│   ├── unit/               # Unit tests
+│   └── integration/        # Integration tests
+├── dist/                    # Compiled code
+├── action.yml              # Action definition
+└── package.json            # Project dependencies
+```
+
 ## Running Tests
 
 There are several types of tests:
@@ -64,25 +88,37 @@ npm run format
 
 ## Development Workflow
 
-1. Create a new branch:
+1. **Fork and Clone**
+   - Fork the repository on GitHub
+   - Clone your fork locally
 
-```bash
-git checkout -b feature/your-feature-name
-```
+2. **Create a Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-2. Make your changes and ensure:
+3. **Development Loop**
+   - Write your code
+   - Add tests
+   - Run tests: `npm test`
+   - Run linting: `npm run lint`
+   - Format code: `npm run format`
 
-   - All tests pass
-   - Code is properly formatted
-   - No linting errors
-   - Documentation is updated
+4. **Before Submitting**
+   - Run `npm run check` to verify everything
+   - Update documentation if needed
+   - Add comments explaining complex logic
 
-3. Commit your changes:
-
+5. **Commit Guidelines**
    - Use clear commit messages
-   - Reference any relevant issues
+   - Reference issues/PRs where appropriate
+   - Keep commits focused and atomic
 
-4. Push your branch and create a Pull Request
+6. **Pull Request Process**
+   - Create PR against main branch
+   - Fill out PR template
+   - Wait for CI checks
+   - Address review comments
 
 ## Pull Request Requirements
 
@@ -95,19 +131,14 @@ git checkout -b feature/your-feature-name
   - Why the changes were made
   - How to test the changes
 
-## Project Structure
+## Code Style
 
-```
-.
-├── src/
-│   ├── index.ts           # Main entry point
-│   ├── types.ts           # Type definitions
-│   └── utils/             # Utility functions
-├── dist/                  # Compiled code
-├── tests/                 # Test files
-├── action.yml            # Action definition
-└── package.json          # Project dependencies
-```
+- Use TypeScript for all new code
+- Follow existing patterns in the codebase
+- Add JSDoc comments for public APIs
+- Keep functions focused and small
+- Use meaningful variable names
+- Add comments explaining complex logic
 
 ## Building the Action
 

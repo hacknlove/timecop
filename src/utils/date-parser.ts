@@ -1,5 +1,13 @@
 import { ValidationError } from '../types';
 
+/**
+ * Parses a date string in YYYY-MM-DD or YYYY-MM-DD HH:MM format
+ * All dates are handled in UTC
+ * 
+ * @param dateString Date string to parse
+ * @returns Object containing parsed Date and whether it includes time
+ * @throws ValidationError if date format or values are invalid
+ */
 export function parseDate(dateString: string): { date: Date; hasTime: boolean } {
   const trimmedDate = dateString.trim();
 
@@ -17,13 +25,13 @@ export function parseDate(dateString: string): { date: Date; hasTime: boolean } 
       minutesStr,
     ].map(Number);
 
-    // Validate ranges
+    // Validate ranges before creating Date object
     if (month < 1 || month > 12) throw new ValidationError('Month must be between 1 and 12');
     if (day < 1 || day > 31) throw new ValidationError('Day must be between 1 and 31');
     if (hours < 0 || hours > 23) throw new ValidationError('Hours must be between 0 and 23');
     if (minutes < 0 || minutes > 59) throw new ValidationError('Minutes must be between 0 and 59');
 
-    // Create date and validate it's valid
+    // Create date in UTC and validate it's valid
     const date = new Date(Date.UTC(year, month - 1, day, hours, minutes));
     if (date.getUTCMonth() !== month - 1) {
       throw new ValidationError('Invalid date for the given month');

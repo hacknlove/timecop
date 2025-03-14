@@ -1,23 +1,26 @@
 import { ValidationError } from '../types';
 import { GitHubClient } from './github-client';
 
+/**
+ * Represents a parsed GitHub Pull Request URL
+ */
 export interface PullRequest {
-  owner: string;
-  repo: string;
-  number: number;
+  owner: string;   // Repository owner/org
+  repo: string;    // Repository name
+  number: number;  // PR number
 }
 
 export interface PRValidationResult {
   canMerge: boolean;
-  reason?: string;
+  reason?: string;  // Error message if canMerge is false
 }
 
 /**
- * Parse a GitHub PR URL into its components
- * @param prUrl GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)
- * @returns Parsed PR information
+ * Parses a GitHub PR URL into its components
+ * Example URL: https://github.com/owner/repo/pull/123
  */
 function parsePRUrl(prUrl: string): PullRequest {
+  // Non-escaped forward slashes in regex for better readability
   const prPattern = /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)$/;
   const match = prUrl.match(prPattern);
 
@@ -35,10 +38,14 @@ function parsePRUrl(prUrl: string): PullRequest {
   };
 }
 
+/**
+ * Validates PR existence and status
+ * Works with both public and private repositories
+ */
 export class PRValidator {
   private client: GitHubClient;
 
-  constructor(token: string) {
+  constructor(token?: string) {
     this.client = new GitHubClient(token);
   }
 
