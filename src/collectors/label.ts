@@ -48,7 +48,7 @@ export async function collectFromLabels(
     });
 
     return requirements;
-  } catch (error) {
+  } catch {
     // If we can't get labels, return empty array
     // The action will continue with other collectors
     return [];

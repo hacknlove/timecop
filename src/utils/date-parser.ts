@@ -3,7 +3,7 @@ import { ValidationError } from '../types';
 /**
  * Parses a date string in YYYY-MM-DD or YYYY-MM-DD HH:MM format
  * All dates are handled in UTC
- * 
+ *
  * @param dateString Date string to parse
  * @returns Object containing parsed Date and whether it includes time
  * @throws ValidationError if date format or values are invalid

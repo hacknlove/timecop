@@ -5,14 +5,14 @@ import { GitHubClient } from './github-client';
  * Represents a parsed GitHub Pull Request URL
  */
 export interface PullRequest {
-  owner: string;   // Repository owner/org
-  repo: string;    // Repository name
-  number: number;  // PR number
+  owner: string; // Repository owner/org
+  repo: string; // Repository name
+  number: number; // PR number
 }
 
 export interface PRValidationResult {
   canMerge: boolean;
-  reason?: string;  // Error message if canMerge is false
+  reason?: string; // Error message if canMerge is false
 }
 
 /**

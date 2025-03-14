@@ -1,7 +1,7 @@
 interface CacheEntry<T> {
   value: T;
   timestamp: number;
-  ttl: number;  // Individual TTL for each entry
+  ttl: number; // Individual TTL for each entry
 }
 
 export class Cache<T> {
@@ -59,4 +59,4 @@ export class Cache<T> {
       }
     }
   }
-} 
+}

@@ -33,7 +33,7 @@ export function parsePullRequestUrl(
       repo,
       pullNumber,
     };
-  } catch (error) {
+  } catch {
     throw new InvalidPullRequestURLError(url);
   }
 }

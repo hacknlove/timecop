@@ -71,7 +71,7 @@ export async function collectFromCommits(
     }
 
     return requirements;
-  } catch (error) {
+  } catch {
     // If we can't get commits, return empty array
     return [];
   }

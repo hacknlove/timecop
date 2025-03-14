@@ -89,15 +89,18 @@ npm run format
 ## Development Workflow
 
 1. **Fork and Clone**
+
    - Fork the repository on GitHub
    - Clone your fork locally
 
 2. **Create a Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 3. **Development Loop**
+
    - Write your code
    - Add tests
    - Run tests: `npm test`
@@ -105,11 +108,13 @@ npm run format
    - Format code: `npm run format`
 
 4. **Before Submitting**
+
    - Run `npm run check` to verify everything
    - Update documentation if needed
    - Add comments explaining complex logic
 
 5. **Commit Guidelines**
+
    - Use clear commit messages
    - Reference issues/PRs where appropriate
    - Keep commits focused and atomic

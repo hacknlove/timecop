@@ -9,7 +9,6 @@ import { prioritizeRequirements } from './utils/priority';
 import { logPrioritizedRequirements } from './utils/logger';
 
 // TODO: Use these priority values when implementing requirement collection
-// eslint-disable-next-line
 const PRIORITY = {
   LABEL: 3,
   DESCRIPTION: 2,
@@ -32,7 +31,6 @@ async function validatePullRequest(
   // For dates, we only care about the highest priority one
   if (dateReqs.length > 0) {
     // TODO: Implement date validation
-    // eslint-disable-next-line
     const _highestPriorityDate = dateReqs.reduce((prev, current) =>
       current.priority > prev.priority ? current : prev
     );
@@ -77,14 +75,14 @@ async function run(): Promise<void> {
       context.repo.repo,
       context.payload.pull_request.number
     );
-    
+
     const descriptionRequirements = await collectFromDescription(
       octokit,
       context.repo.owner,
       context.repo.repo,
       context.payload.pull_request.number
     );
-    
+
     const commitRequirements = await collectFromCommits(
       octokit,
       context.repo.owner,
@@ -96,11 +94,11 @@ async function run(): Promise<void> {
     const allRequirements = [
       ...labelRequirements,
       ...descriptionRequirements,
-      ...commitRequirements
+      ...commitRequirements,
     ];
-    
+
     const prioritizedRequirements = prioritizeRequirements(allRequirements);
-    
+
     // Log requirements for debugging
     logPrioritizedRequirements(prioritizedRequirements);
 

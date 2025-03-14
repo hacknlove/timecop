@@ -19,7 +19,7 @@ describe('Cache', () => {
   it('should expire entries after TTL', () => {
     const cache = new Cache<string>(1000); // 1 second TTL
     cache.set('key', 'value');
-    
+
     vi.advanceTimersByTime(1500); // Advance 1.5 seconds
     expect(cache.get('key')).toBeUndefined();
   });
@@ -49,10 +49,10 @@ describe('Cache', () => {
   it('should keep valid entries during cleanup', () => {
     const cache = new Cache<string>(2000);
     cache.set('key1', 'value1');
-    
+
     vi.advanceTimersByTime(1000);
     cache.set('key2', 'value2');
-    
+
     vi.advanceTimersByTime(500);
     cache.cleanup();
 
@@ -71,4 +71,4 @@ describe('Cache', () => {
     expect(cache.get('key1')).toBeUndefined(); // should be cleaned up
     expect(cache.get('key2')).toBe('value2'); // should still be valid
   });
-}); 
+});

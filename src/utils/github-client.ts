@@ -7,10 +7,10 @@ import { Cache } from './cache';
  */
 export interface GitHubPR {
   number: number;
-  state: string;    // 'open' | 'closed'
-  merged: boolean;  // true if PR was merged
-  mergeable: boolean | null;  // null while GitHub is calculating merge status
-  draft: boolean;   // true for draft PRs
+  state: string; // 'open' | 'closed'
+  merged: boolean; // true if PR was merged
+  mergeable: boolean | null; // null while GitHub is calculating merge status
+  draft: boolean; // true for draft PRs
 }
 
 export class RateLimitError extends Error {
@@ -34,16 +34,16 @@ export class GitHubClient {
 
   // Cache TTLs in milliseconds
   private static readonly TTL = {
-    MERGED: 5 * 60 * 1000,    // 5 minutes for merged PRs
-    CLOSED: 60 * 1000,        // 1 minute for closed PRs
-    DEFAULT: 30 * 1000,       // 30 seconds for open PRs
+    MERGED: 5 * 60 * 1000, // 5 minutes for merged PRs
+    CLOSED: 60 * 1000, // 1 minute for closed PRs
+    DEFAULT: 30 * 1000, // 30 seconds for open PRs
   };
 
   // Rate limit retry settings
   private static readonly RETRY = {
     MAX_ATTEMPTS: 3,
-    BASE_DELAY: 1000,    // Start with 1 second delay
-    MAX_DELAY: 10000,    // Max 10 second delay
+    BASE_DELAY: 1000, // Start with 1 second delay
+    MAX_DELAY: 10000, // Max 10 second delay
   };
 
   /**
@@ -62,7 +62,7 @@ export class GitHubClient {
    */
   async getPR(owner: string, repo: string, prNumber: number): Promise<GitHubPR> {
     const cacheKey = `${owner}/${repo}#${prNumber}`;
-    
+
     // Try cache first
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
@@ -90,10 +90,10 @@ export class GitHubClient {
             draft: data.draft,
           };
 
-          const ttl = pr.merged 
-            ? GitHubClient.TTL.MERGED 
-            : pr.state === 'closed' 
-              ? GitHubClient.TTL.CLOSED 
+          const ttl = pr.merged
+            ? GitHubClient.TTL.MERGED
+            : pr.state === 'closed'
+              ? GitHubClient.TTL.CLOSED
               : GitHubClient.TTL.DEFAULT;
 
           this.cache.set(cacheKey, pr, ttl);
@@ -114,15 +114,14 @@ export class GitHubClient {
           draft: data.draft,
         };
 
-        const ttl = pr.merged 
-          ? GitHubClient.TTL.MERGED 
-          : pr.state === 'closed' 
-            ? GitHubClient.TTL.CLOSED 
+        const ttl = pr.merged
+          ? GitHubClient.TTL.MERGED
+          : pr.state === 'closed'
+            ? GitHubClient.TTL.CLOSED
             : GitHubClient.TTL.DEFAULT;
 
         this.cache.set(cacheKey, pr, ttl);
         return pr;
-
       } catch (error: unknown) {
         if (error instanceof RateLimitError) throw error;
 
@@ -131,7 +130,9 @@ export class GitHubClient {
             throw new ValidationError(`PR not found: ${cacheKey}`);
           }
           if (error.status === 403) {
-            const resetAt = new Date(parseInt(error.headers?.['x-ratelimit-reset'] as string, 10) * 1000);
+            const resetAt = new Date(
+              parseInt(error.headers?.['x-ratelimit-reset'] as string, 10) * 1000
+            );
             throw new RateLimitError(
               `Rate limit exceeded. Resets at ${resetAt.toISOString()}`,
               resetAt,
@@ -148,7 +149,7 @@ export class GitHubClient {
           GitHubClient.RETRY.BASE_DELAY * Math.pow(2, attempt),
           GitHubClient.RETRY.MAX_DELAY
         );
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 

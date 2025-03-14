@@ -69,7 +69,7 @@ export async function collectFromDescription(
     }
 
     return requirements;
-  } catch (error) {
+  } catch {
     // If we can't get PR description, return empty array
     return [];
   }
