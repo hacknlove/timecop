@@ -1,23 +1,33 @@
 import { ValidationError } from '../types';
+import { parseTimezone, convertToUTC } from './timezone';
 
 interface ParsedDate {
   date: Date;
   hasTime: boolean;
+  timezone?: string;
 }
 
 export function parseDate(dateString: string): ParsedDate {
   const trimmedDate = dateString.trim();
   
-  // Try parsing with time (YYYY-MM-DD HH:MM)
-  const fullPattern = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/;
+  // Try parsing with time and optional timezone (YYYY-MM-DD HH:MM [TZ])
+  const fullPattern = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?:\s+([A-Za-z0-9+-:]+))?$/;
   const fullMatch = trimmedDate.match(fullPattern);
   
   if (fullMatch) {
-    const [, yearStr, monthStr, dayStr, hoursStr, minutesStr] = fullMatch;
+    const [, yearStr, monthStr, dayStr, hoursStr, minutesStr, timezone] = fullMatch;
     const [year, month, day, hours, minutes] = [yearStr, monthStr, dayStr, hoursStr, minutesStr]
       .map(Number);
     
-    const date = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    let date = new Date(year, month - 1, day, hours, minutes);
+    
+    // Convert to UTC if timezone specified
+    if (timezone) {
+      date = convertToUTC(date, timezone);
+    } else {
+      // If no timezone, assume UTC
+      date = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    }
     
     // Validate the parsed values match the input (catches invalid dates like 2024-02-31)
     if (
@@ -27,7 +37,7 @@ export function parseDate(dateString: string): ParsedDate {
       date.getUTCHours() === hours &&
       date.getUTCMinutes() === minutes
     ) {
-      return { date, hasTime: true };
+      return { date, hasTime: true, timezone };
     }
     
     throw new ValidationError('Invalid date/time values');

@@ -18,7 +18,7 @@
 
 ### Phase 2: Date Validation
 - [x] Implement date parsing
-- [ ] Add timezone support
+- [x] Add timezone support
 - [ ] Validate date formats
 - [ ] Compare dates with current time
 - [ ] Handle invalid date formats
