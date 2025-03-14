@@ -60,8 +60,8 @@ export class GitHubClient {
    * @throws RateLimitError if rate limit is nearly exhausted
    * @throws Error for other API errors (rate limits, network issues, etc)
    */
-  async getPR(owner: string, repo: string, prNumber: number): Promise<GitHubPR> {
-    const cacheKey = `${owner}/${repo}#${prNumber}`;
+  async getPR(owner: string, repo: string, number: number): Promise<GitHubPR> {
+    const cacheKey = `${owner}/${repo}#${number}`;
 
     // Try cache first
     const cached = this.cache.get(cacheKey);
@@ -70,33 +70,35 @@ export class GitHubClient {
     let attempt = 0;
     while (attempt < GitHubClient.RETRY.MAX_ATTEMPTS) {
       try {
-        const { data, headers } = await this.octokit.pulls.get({
+        const response = await this.octokit.rest.pulls.get({
           owner,
           repo,
-          pull_number: prNumber,
+          pull_number: number,
         });
 
         // Check remaining rate limit
-        const remaining = parseInt(headers['x-ratelimit-remaining'] as string, 10);
-        const resetAt = new Date(parseInt(headers['x-ratelimit-reset'] as string, 10) * 1000);
+        const remaining = parseInt(response.headers['x-ratelimit-remaining'] as string, 10);
+        const resetAt = new Date(
+          parseInt(response.headers['x-ratelimit-reset'] as string, 10) * 1000
+        );
 
         if (remaining <= 1) {
           // Throw rate limit error but cache the response first
-          const pr: GitHubPR = {
-            number: data.number,
-            state: data.state,
-            merged: data.merged,
-            mergeable: data.mergeable,
-            draft: data.draft,
+          const prData: GitHubPR = {
+            number: response.data.number,
+            state: response.data.state,
+            merged: response.data.merged ?? false,
+            mergeable: response.data.mergeable,
+            draft: response.data.draft ?? false,
           };
 
-          const ttl = pr.merged
+          const ttl = prData.merged
             ? GitHubClient.TTL.MERGED
-            : pr.state === 'closed'
+            : prData.state === 'closed'
               ? GitHubClient.TTL.CLOSED
               : GitHubClient.TTL.DEFAULT;
 
-          this.cache.set(cacheKey, pr, ttl);
+          this.cache.set(cacheKey, prData, ttl);
 
           throw new RateLimitError(
             `Rate limit nearly exhausted (${remaining} remaining). Resets at ${resetAt.toISOString()}`,
@@ -106,32 +108,33 @@ export class GitHubClient {
         }
 
         // Extract and cache PR data
-        const pr: GitHubPR = {
-          number: data.number,
-          state: data.state,
-          merged: data.merged,
-          mergeable: data.mergeable,
-          draft: data.draft,
+        const prData: GitHubPR = {
+          number: response.data.number,
+          state: response.data.state,
+          merged: response.data.merged ?? false,
+          mergeable: response.data.mergeable,
+          draft: response.data.draft ?? false,
         };
 
-        const ttl = pr.merged
+        const ttl = prData.merged
           ? GitHubClient.TTL.MERGED
-          : pr.state === 'closed'
+          : prData.state === 'closed'
             ? GitHubClient.TTL.CLOSED
             : GitHubClient.TTL.DEFAULT;
 
-        this.cache.set(cacheKey, pr, ttl);
-        return pr;
+        this.cache.set(cacheKey, prData, ttl);
+        return prData;
       } catch (error: unknown) {
         if (error instanceof RateLimitError) throw error;
 
         if (error instanceof Error && 'status' in error) {
-          if (error.status === 404) {
+          const httpError = error as Error & { status: number; headers?: Record<string, string> };
+          if (httpError.status === 404) {
             throw new ValidationError(`PR not found: ${cacheKey}`);
           }
-          if (error.status === 403) {
+          if (httpError.status === 403) {
             const resetAt = new Date(
-              parseInt(error.headers?.['x-ratelimit-reset'] as string, 10) * 1000
+              parseInt(httpError.headers?.['x-ratelimit-reset'] as string, 10) * 1000
             );
             throw new RateLimitError(
               `Rate limit exceeded. Resets at ${resetAt.toISOString()}`,

@@ -34,7 +34,6 @@
 - [x] Add caching for PR status checks
 - [x] Handle rate limiting
 
-
 ### Phase 4: Release & Maintenance
 
 - [ ] First beta release

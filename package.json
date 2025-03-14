@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "ncc build src/index.ts -o dist",
+    "build": "tsc && ncc build lib/index.js -o dist",
+    "prebuild": "rm -rf lib dist",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -14,8 +15,7 @@
     "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
     "format": "prettier --write '**/*.{ts,js,json,md}'",
     "format:check": "prettier --check '**/*.{ts,js,json,md}'",
-    "check": "npm run format:check && npm run lint && npm run test",
-    "prepare": "husky install"
+    "check": "npm run format:check && npm run lint && npm run test"
   },
   "keywords": [
     "github",

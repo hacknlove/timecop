@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": ".",
+    "module": "CommonJS",
+    "outDir": "./lib",
+    "rootDir": "./src",
     "strict": true,
-    "noImplicitAny": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node", "vitest/globals"]
+    "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts", "lib", "dist"]
 }

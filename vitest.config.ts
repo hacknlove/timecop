@@ -4,11 +4,14 @@ export default defineConfig({
   test: {
     globals: true,
     coverage: {
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      thresholds: {
+        branches: 70,
+        functions: 70,
+        lines: 70,
+        statements: 70,
+      },
     },
   },
 });
