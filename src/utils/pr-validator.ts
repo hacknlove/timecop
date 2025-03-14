@@ -1,5 +1,5 @@
 import { ValidationError } from '../types';
-import { GitHubClient, GitHubPR } from './github-client';
+import { GitHubClient } from './github-client';
 
 export interface PullRequest {
   owner: string;
@@ -18,7 +18,7 @@ export interface PRValidationResult {
  * @returns Parsed PR information
  */
 function parsePRUrl(prUrl: string): PullRequest {
-  const prPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)$/;
+  const prPattern = /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)$/;
   const match = prUrl.match(prPattern);
 
   if (!match) {
@@ -31,7 +31,7 @@ function parsePRUrl(prUrl: string): PullRequest {
   return {
     owner,
     repo,
-    number: parseInt(prNumber, 10)
+    number: parseInt(prNumber, 10),
   };
 }
 
@@ -55,24 +55,23 @@ export class PRValidator {
       if (prDetails.state === 'closed' && !prDetails.merged) {
         return {
           canMerge: false,
-          reason: `PR ${prUrl} is closed without being merged`
+          reason: `PR ${prUrl} is closed without being merged`,
         };
       }
 
       if (prDetails.draft) {
         return {
           canMerge: false,
-          reason: `PR ${prUrl} is in draft state`
+          reason: `PR ${prUrl} is in draft state`,
         };
       }
 
       return { canMerge: true };
-
     } catch (error) {
       if (error instanceof ValidationError) {
         return {
           canMerge: false,
-          reason: error.message
+          reason: error.message,
         };
       }
       throw error;
@@ -80,4 +79,4 @@ export class PRValidator {
   }
 }
 
-export { parsePRUrl }; 
+export { parsePRUrl };

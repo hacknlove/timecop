@@ -19,7 +19,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: hacknlove/timecop@v1
+      with:
+        # Optional: GitHub token for higher rate limits and private repo access
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Authentication
+
+TimeCop can work with or without a GitHub token:
+
+- **Without Token**: Works for public repositories with lower rate limits (60 requests/hour)
+- **With Token**: Higher rate limits (5,000 requests/hour) and access to private repositories
+
+We recommend using a token in production for better reliability.
 
 ## Setting Requirements
 

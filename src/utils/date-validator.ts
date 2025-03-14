@@ -1,4 +1,5 @@
 import { ValidationError } from '../types';
+import { parseDate } from './date-parser';
 
 interface DateValidationResult {
   isValid: boolean;
@@ -22,16 +23,13 @@ export function validateDateFormat(dateString: string): DateValidationResult {
   const dateTimePattern = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}(?:\s+[A-Za-z0-9+-:]+)?$/;
 
   if (!dateOnlyPattern.test(dateString) && !dateTimePattern.test(dateString)) {
-    result.errors.push(
-      'Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM [TZ]'
-    );
+    result.errors.push('Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM [TZ]');
     result.isValid = false;
     return result;
   }
 
   try {
     // Let Date handle the actual date validation
-    const { parseDate } = require('./date-parser');
     parseDate(dateString);
   } catch (error) {
     if (error instanceof ValidationError) {
@@ -51,7 +49,6 @@ export function validateDateRange(dateString: string): DateValidationResult {
 
   try {
     // Just validate that the date can be parsed
-    const { parseDate } = require('./date-parser');
     parseDate(dateString);
   } catch (error) {
     if (error instanceof ValidationError) {
@@ -61,4 +58,4 @@ export function validateDateRange(dateString: string): DateValidationResult {
   }
 
   return result;
-} 
+}

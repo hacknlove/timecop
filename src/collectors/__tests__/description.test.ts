@@ -28,12 +28,7 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -54,12 +49,7 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -82,12 +72,7 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(3);
     expect(requirements).toContainEqual({
@@ -111,12 +96,7 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(0);
   });
@@ -128,12 +108,7 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(0);
   });
@@ -152,13 +127,8 @@ Some PR description
       },
     });
 
-    const requirements = await collectFromDescription(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromDescription(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(2);
   });
-}); 
+});

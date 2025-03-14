@@ -6,9 +6,7 @@ interface ValidationError {
   message: string;
 }
 
-export function validateRequirements(
-  requirements: MergeRequirement[]
-): ValidationError[] {
+export function validateRequirements(requirements: MergeRequirement[]): ValidationError[] {
   const errors: ValidationError[] = [];
 
   for (const req of requirements) {
@@ -44,11 +42,7 @@ function validateDateRequirement(req: MergeRequirement): ValidationError[] {
   const [year, month, day] = datePart.split('-').map(Number);
   const date = new Date(year, month - 1, day);
 
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
     errors.push({
       source: req.source,
       value: dateValue,
@@ -76,8 +70,7 @@ function validateDependencyRequirement(req: MergeRequirement): ValidationError[]
   const urlValue = req.value.trim();
 
   // Basic GitHub PR URL validation
-  const urlRegex =
-    /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/\d+$/;
+  const urlRegex = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/\d+$/;
   if (!urlRegex.test(urlValue)) {
     errors.push({
       source: req.source,
@@ -87,4 +80,4 @@ function validateDependencyRequirement(req: MergeRequirement): ValidationError[]
   }
 
   return errors;
-} 
+}

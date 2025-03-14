@@ -18,9 +18,7 @@ export function logRequirements(
   if (requirements.length > 0) {
     core.debug('Found requirements:');
     requirements.forEach((req) => {
-      core.debug(
-        `- ${req.type}: ${req.value} (priority: ${req.priority})`
-      );
+      core.debug(`- ${req.type}: ${req.value} (priority: ${req.priority})`);
     });
   }
 
@@ -35,9 +33,7 @@ export function logRequirements(
   core.endGroup();
 }
 
-export function logPrioritizedRequirements(
-  requirements: MergeRequirement[]
-): void {
+export function logPrioritizedRequirements(requirements: MergeRequirement[]): void {
   core.startGroup('Final Requirements (After Prioritization)');
 
   const dateReq = requirements.find((req) => req.type === 'date');
@@ -59,4 +55,4 @@ export function logPrioritizedRequirements(
   }
 
   core.endGroup();
-} 
+}

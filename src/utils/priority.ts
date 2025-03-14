@@ -1,17 +1,12 @@
 import { MergeRequirement } from '../types';
 
-export function prioritizeRequirements(
-  requirements: MergeRequirement[]
-): MergeRequirement[] {
+export function prioritizeRequirements(requirements: MergeRequirement[]): MergeRequirement[] {
   const dateRequirements = requirements.filter((req) => req.type === 'date');
-  const dependencyRequirements = requirements.filter(
-    (req) => req.type === 'dependency'
-  );
+  const dependencyRequirements = requirements.filter((req) => req.type === 'dependency');
 
   // For dates, only keep the highest priority one
   const highestPriorityDate = dateRequirements.reduce(
-    (highest, current) =>
-      !highest || current.priority > highest.priority ? current : highest,
+    (highest, current) => (!highest || current.priority > highest.priority ? current : highest),
     null as MergeRequirement | null
   );
 
@@ -28,4 +23,4 @@ export function prioritizeRequirements(
     ...(highestPriorityDate ? [highestPriorityDate] : []),
     ...Array.from(uniqueDependencies.values()),
   ];
-} 
+}

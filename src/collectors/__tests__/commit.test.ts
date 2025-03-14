@@ -30,12 +30,7 @@ describe('Commit Collector', () => {
       ],
     });
 
-    const requirements = await collectFromCommits(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromCommits(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -60,12 +55,7 @@ describe('Commit Collector', () => {
       ],
     });
 
-    const requirements = await collectFromCommits(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromCommits(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -98,12 +88,7 @@ describe('Commit Collector', () => {
       ],
     });
 
-    const requirements = await collectFromCommits(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromCommits(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(2);
     expect(requirements).toContainEqual({
@@ -131,28 +116,16 @@ describe('Commit Collector', () => {
       ],
     });
 
-    const requirements = await collectFromCommits(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromCommits(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(0);
   });
 
   it('should handle API errors gracefully', async () => {
-    mockOctokit.rest.pulls.listCommits.mockRejectedValue(
-      new Error('API Error')
-    );
+    mockOctokit.rest.pulls.listCommits.mockRejectedValue(new Error('API Error'));
 
-    const requirements = await collectFromCommits(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromCommits(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(0);
   });
-}); 
+});

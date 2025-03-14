@@ -38,9 +38,7 @@ describe('Logger', () => {
 
       expect(core.startGroup).toHaveBeenCalledWith('Requirements from label');
       expect(core.debug).toHaveBeenCalledWith('Found requirements:');
-      expect(core.debug).toHaveBeenCalledWith(
-        '- date: 2024-01-15 (priority: 3)'
-      );
+      expect(core.debug).toHaveBeenCalledWith('- date: 2024-01-15 (priority: 3)');
       expect(core.debug).toHaveBeenCalledWith(
         '- dependency: https://github.com/org/repo/pull/123 (priority: 3)'
       );
@@ -66,12 +64,8 @@ describe('Logger', () => {
 
       logRequirements('label', [], errors);
 
-      expect(core.warning).toHaveBeenCalledWith(
-        'Found 1 invalid requirements:'
-      );
-      expect(core.warning).toHaveBeenCalledWith(
-        '- invalid-date: Invalid date format'
-      );
+      expect(core.warning).toHaveBeenCalledWith('Found 1 invalid requirements:');
+      expect(core.warning).toHaveBeenCalledWith('- invalid-date: Invalid date format');
     });
   });
 
@@ -100,12 +94,8 @@ describe('Logger', () => {
 
       logPrioritizedRequirements(requirements);
 
-      expect(core.startGroup).toHaveBeenCalledWith(
-        'Final Requirements (After Prioritization)'
-      );
-      expect(core.info).toHaveBeenCalledWith(
-        'Release Date: 2024-01-15 (from label)'
-      );
+      expect(core.startGroup).toHaveBeenCalledWith('Final Requirements (After Prioritization)');
+      expect(core.info).toHaveBeenCalledWith('Release Date: 2024-01-15 (from label)');
       expect(core.info).toHaveBeenCalledWith('Dependencies (2):');
       expect(core.info).toHaveBeenCalledWith(
         '- https://github.com/org/repo/pull/123 (from description)'
@@ -119,11 +109,9 @@ describe('Logger', () => {
     it('should handle no requirements', () => {
       logPrioritizedRequirements([]);
 
-      expect(core.startGroup).toHaveBeenCalledWith(
-        'Final Requirements (After Prioritization)'
-      );
+      expect(core.startGroup).toHaveBeenCalledWith('Final Requirements (After Prioritization)');
       expect(core.info).toHaveBeenCalledWith('No requirements found');
       expect(core.endGroup).toHaveBeenCalled();
     });
   });
-}); 
+});

@@ -12,10 +12,8 @@ export interface GitHubPR {
 export class GitHubClient {
   private octokit: Octokit;
 
-  constructor(token: string) {
-    this.octokit = new Octokit({
-      auth: token
-    });
+  constructor(token?: string) {
+    this.octokit = new Octokit(token ? { auth: token } : {});
   }
 
   async getPR(owner: string, repo: string, prNumber: number): Promise<GitHubPR> {
@@ -23,7 +21,7 @@ export class GitHubClient {
       const { data } = await this.octokit.pulls.get({
         owner,
         repo,
-        pull_number: prNumber
+        pull_number: prNumber,
       });
 
       return {
@@ -31,13 +29,13 @@ export class GitHubClient {
         state: data.state,
         merged: data.merged,
         mergeable: data.mergeable,
-        draft: data.draft
+        draft: data.draft,
       };
-    } catch (error: any) {
-      if (error.status === 404) {
+    } catch (error: unknown) {
+      if (error instanceof Error && 'status' in error && error.status === 404) {
         throw new ValidationError(`PR not found: ${owner}/${repo}#${prNumber}`);
       }
       throw error;
     }
   }
-} 
+}

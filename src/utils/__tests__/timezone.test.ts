@@ -74,4 +74,4 @@ describe('Timezone Handler', () => {
       expect(formatWithTimezone(utc, 'UTC-05:00')).toBe('2024-01-14 21:00 UTC-05:00');
     });
   });
-}); 
+});

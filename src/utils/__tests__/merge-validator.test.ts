@@ -40,7 +40,9 @@ describe('Merge Validator', () => {
     it('should handle invalid date format', () => {
       const result = validateMergeDate('invalid-date');
       expect(result.canMerge).toBe(false);
-      expect(result.reason).toBe('Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM [TZ]');
+      expect(result.reason).toBe(
+        'Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM [TZ]'
+      );
     });
   });
-}); 
+});

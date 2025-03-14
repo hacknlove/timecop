@@ -25,11 +25,30 @@ npm run build
 
 ## Running Tests
 
+There are several types of tests:
+
+### Unit Tests
+
 Run the test suite:
 
 ```bash
 npm test
 ```
+
+### Integration Tests
+
+Tests that interact with GitHub's API:
+
+```bash
+# For public repos, no token needed:
+npm run test:integration
+
+# For private repos or higher rate limits:
+GITHUB_TOKEN=your_github_token npm run test:integration
+```
+
+Note: Integration tests use real GitHub API calls. They work without a token for public repositories,
+but providing a token is recommended for development to avoid rate limiting.
 
 Run linting:
 

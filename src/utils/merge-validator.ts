@@ -23,7 +23,7 @@ export function validateMergeDate(
 
   try {
     const { date: targetDate } = parseDate(dateString);
-    
+
     // Get UTC timestamps for comparison
     const now = new Date(
       Date.UTC(
@@ -38,7 +38,7 @@ export function validateMergeDate(
     if (targetDate > now) {
       return {
         canMerge: false,
-        reason: `PR cannot be merged before ${dateString}`
+        reason: `PR cannot be merged before ${dateString}`,
       };
     }
 
@@ -47,9 +47,9 @@ export function validateMergeDate(
     if (error instanceof ValidationError) {
       return {
         canMerge: false,
-        reason: error.message
+        reason: error.message,
       };
     }
     throw error;
   }
-} 
+}

@@ -114,4 +114,4 @@ describe('Requirement Validator', () => {
     const errors = validateRequirements(reqs);
     expect(errors).toHaveLength(2);
   });
-}); 
+});

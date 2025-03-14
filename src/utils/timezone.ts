@@ -37,13 +37,12 @@ export function parseTimezone(timezone: string): TimezoneInfo {
     const [, sign, hours, minutes = '00'] = utcMatch;
     const hoursNum = parseInt(hours, 10);
     const minutesNum = parseInt(minutes, 10);
-    
+
     if (hoursNum > 14 || (hoursNum === 14 && minutesNum > 0) || minutesNum >= 60) {
       throw new ValidationError('Invalid timezone offset: must be between UTC-14:00 and UTC+14:00');
     }
-    
-    const offsetMinutes =
-      (sign === '+' ? 1 : -1) * (hoursNum * 60 + minutesNum);
+
+    const offsetMinutes = (sign === '+' ? 1 : -1) * (hoursNum * 60 + minutesNum);
 
     return {
       offsetMinutes,
@@ -72,4 +71,4 @@ export function formatWithTimezone(date: Date, timezone: string): string {
   const minutes = String(localDate.getUTCMinutes()).padStart(2, '0');
 
   return `${year}-${month}-${day} ${hours}:${minutes} ${name}`;
-} 
+}

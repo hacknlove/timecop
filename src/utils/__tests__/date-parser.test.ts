@@ -82,4 +82,4 @@ describe('Date Parser', () => {
       expect(formatDate(date, true)).toBe('2024-02-05 09:05');
     });
   });
-}); 
+});

@@ -122,4 +122,4 @@ describe('Requirement Prioritization', () => {
     const result = prioritizeRequirements([]);
     expect(result).toHaveLength(0);
   });
-}); 
+});

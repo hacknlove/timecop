@@ -73,4 +73,4 @@ export async function collectFromDescription(
     // If we can't get PR description, return empty array
     return [];
   }
-} 
+}

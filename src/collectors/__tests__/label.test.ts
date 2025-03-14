@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { collectFromLabels } from '../label';
-import { MergeRequirement } from '../../types';
 import { Octokit } from '@octokit/rest';
 
 describe('Label Collector', () => {
@@ -27,12 +26,7 @@ describe('Label Collector', () => {
       ],
     });
 
-    const requirements = await collectFromLabels(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromLabels(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -51,12 +45,7 @@ describe('Label Collector', () => {
       ],
     });
 
-    const requirements = await collectFromLabels(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromLabels(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(1);
     expect(requirements[0]).toEqual({
@@ -76,12 +65,7 @@ describe('Label Collector', () => {
       ],
     });
 
-    const requirements = await collectFromLabels(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromLabels(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(2);
     expect(requirements).toContainEqual({
@@ -99,16 +83,9 @@ describe('Label Collector', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    mockOctokit.rest.issues.listLabelsOnIssue.mockRejectedValue(
-      new Error('API Error')
-    );
+    mockOctokit.rest.issues.listLabelsOnIssue.mockRejectedValue(new Error('API Error'));
 
-    const requirements = await collectFromLabels(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromLabels(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(0);
   });
@@ -121,15 +98,10 @@ describe('Label Collector', () => {
       ],
     });
 
-    const requirements = await collectFromLabels(
-      mockOctokit,
-      'owner',
-      'repo',
-      123
-    );
+    const requirements = await collectFromLabels(mockOctokit, 'owner', 'repo', 123);
 
     expect(requirements).toHaveLength(2);
     expect(requirements[0].value).toBe('2024-01-15');
     expect(requirements[1].value).toBe('https://github.com/org/repo/pull/456');
   });
-}); 
+});

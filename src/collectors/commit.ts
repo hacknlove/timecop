@@ -75,4 +75,4 @@ export async function collectFromCommits(
     // If we can't get commits, return empty array
     return [];
   }
-} 
+}
