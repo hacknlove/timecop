@@ -1,6 +1,10 @@
 name: "TimeCop"
 description: "Ensures PRs meet dependency and date requirements before merging"
-author: "[Your Name/Organization]"
+author: "hacknlove"
+
+branding:
+  icon: "shield"
+  color: "blue"
 
 inputs:
   github-token:
@@ -11,8 +15,4 @@ inputs:
 
 runs:
   using: "node20"
-  main: "dist/index.js"
-
-branding:
-  icon: "shield"
-  color: "blue" 
+  main: "dist/index.js" 
