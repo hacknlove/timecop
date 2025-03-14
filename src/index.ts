@@ -17,7 +17,7 @@ const PRIORITY = {
   COMMIT: 1,
 } as const;
 
-async function validatePullRequest(
+export async function validatePullRequest(
   octokit: ReturnType<typeof github.getOctokit>,
   requirements: MergeRequirement[]
 ): Promise<ValidationResult> {
@@ -32,22 +32,32 @@ async function validatePullRequest(
 
   // For dates, we only care about the highest priority one
   if (dateReqs.length > 0) {
-    // TODO: Implement date validation
-    const _highestPriorityDate = dateReqs.reduce((prev, current) =>
+    const highestPriorityDate = dateReqs.reduce((prev, current) =>
       current.priority > prev.priority ? current : prev
     );
+
+    const targetDate = new Date(highestPriorityDate.value);
+    const now = new Date();
+
+    // Reset time part to compare just the dates
+    targetDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    if (now < targetDate) {
+      result.canMerge = false;
+      result.reasons.push(
+        `Cannot merge before ${highestPriorityDate.value} (${Math.ceil(
+          (targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )} days remaining)`
+      );
+    }
   }
 
   // For dependencies, we combine all of them
   for (const dep of dependencyReqs) {
     try {
+      const { owner, repo, pullNumber } = parsePullRequestUrl(dep.value);
       // TODO: Implement dependency validation
-      const {
-        owner: _owner,
-        repo: _repo,
-        pullNumber: _pullNumber,
-      } = parsePullRequestUrl(dep.value);
-      // Will be used when implementing PR status check
     } catch (error) {
       if (error instanceof Error) {
         result.reasons.push(error.message);
