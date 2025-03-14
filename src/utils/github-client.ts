@@ -13,6 +13,17 @@ export interface GitHubPR {
   draft: boolean;   // true for draft PRs
 }
 
+export class RateLimitError extends Error {
+  constructor(
+    message: string,
+    public readonly resetAt: Date,
+    public readonly remaining: number
+  ) {
+    super(message);
+    this.name = 'RateLimitError';
+  }
+}
+
 /**
  * Handles all GitHub API interactions with proper error handling and rate limiting
  * Can work with or without authentication token
@@ -28,6 +39,13 @@ export class GitHubClient {
     DEFAULT: 30 * 1000,       // 30 seconds for open PRs
   };
 
+  // Rate limit retry settings
+  private static readonly RETRY = {
+    MAX_ATTEMPTS: 3,
+    BASE_DELAY: 1000,    // Start with 1 second delay
+    MAX_DELAY: 10000,    // Max 10 second delay
+  };
+
   /**
    * @param token Optional GitHub token. If not provided, works with public repos only
    */
@@ -37,8 +55,9 @@ export class GitHubClient {
   }
 
   /**
-   * Fetches PR information from GitHub
+   * Fetches PR information from GitHub with rate limit handling
    * @throws ValidationError if PR not found
+   * @throws RateLimitError if rate limit is nearly exhausted
    * @throws Error for other API errors (rate limits, network issues, etc)
    */
   async getPR(owner: string, repo: string, prNumber: number): Promise<GitHubPR> {
@@ -48,39 +67,92 @@ export class GitHubClient {
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
-    try {
-      const { data } = await this.octokit.pulls.get({
-        owner,
-        repo,
-        pull_number: prNumber,
-      });
+    let attempt = 0;
+    while (attempt < GitHubClient.RETRY.MAX_ATTEMPTS) {
+      try {
+        const { data, headers } = await this.octokit.pulls.get({
+          owner,
+          repo,
+          pull_number: prNumber,
+        });
 
-      // Extract only the fields we need
-      const pr: GitHubPR = {
-        number: data.number,
-        state: data.state,
-        merged: data.merged,
-        mergeable: data.mergeable,
-        draft: data.draft,
-      };
+        // Check remaining rate limit
+        const remaining = parseInt(headers['x-ratelimit-remaining'] as string, 10);
+        const resetAt = new Date(parseInt(headers['x-ratelimit-reset'] as string, 10) * 1000);
 
-      // Cache with appropriate TTL based on PR state
-      const ttl = pr.merged 
-        ? GitHubClient.TTL.MERGED 
-        : pr.state === 'closed' 
-          ? GitHubClient.TTL.CLOSED 
-          : GitHubClient.TTL.DEFAULT;
+        if (remaining <= 1) {
+          // Throw rate limit error but cache the response first
+          const pr: GitHubPR = {
+            number: data.number,
+            state: data.state,
+            merged: data.merged,
+            mergeable: data.mergeable,
+            draft: data.draft,
+          };
 
-      this.cache.set(cacheKey, pr, ttl);
-      return pr;
+          const ttl = pr.merged 
+            ? GitHubClient.TTL.MERGED 
+            : pr.state === 'closed' 
+              ? GitHubClient.TTL.CLOSED 
+              : GitHubClient.TTL.DEFAULT;
 
-    } catch (error: unknown) {
-      // Special handling for 404 errors
-      if (error instanceof Error && 'status' in error && error.status === 404) {
-        throw new ValidationError(`PR not found: ${cacheKey}`);
+          this.cache.set(cacheKey, pr, ttl);
+
+          throw new RateLimitError(
+            `Rate limit nearly exhausted (${remaining} remaining). Resets at ${resetAt.toISOString()}`,
+            resetAt,
+            remaining
+          );
+        }
+
+        // Extract and cache PR data
+        const pr: GitHubPR = {
+          number: data.number,
+          state: data.state,
+          merged: data.merged,
+          mergeable: data.mergeable,
+          draft: data.draft,
+        };
+
+        const ttl = pr.merged 
+          ? GitHubClient.TTL.MERGED 
+          : pr.state === 'closed' 
+            ? GitHubClient.TTL.CLOSED 
+            : GitHubClient.TTL.DEFAULT;
+
+        this.cache.set(cacheKey, pr, ttl);
+        return pr;
+
+      } catch (error: unknown) {
+        if (error instanceof RateLimitError) throw error;
+
+        if (error instanceof Error && 'status' in error) {
+          if (error.status === 404) {
+            throw new ValidationError(`PR not found: ${cacheKey}`);
+          }
+          if (error.status === 403) {
+            const resetAt = new Date(parseInt(error.headers?.['x-ratelimit-reset'] as string, 10) * 1000);
+            throw new RateLimitError(
+              `Rate limit exceeded. Resets at ${resetAt.toISOString()}`,
+              resetAt,
+              0
+            );
+          }
+        }
+
+        // For other errors, implement exponential backoff
+        attempt++;
+        if (attempt === GitHubClient.RETRY.MAX_ATTEMPTS) throw error;
+
+        const delay = Math.min(
+          GitHubClient.RETRY.BASE_DELAY * Math.pow(2, attempt),
+          GitHubClient.RETRY.MAX_DELAY
+        );
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
-      throw error; // Re-throw other errors
     }
+
+    throw new Error('Maximum retry attempts reached');
   }
 
   /**
