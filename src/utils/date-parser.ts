@@ -7,10 +7,10 @@ interface ParsedDate {
   timezone?: string;
 }
 
-export function parseDate(dateString: string): ParsedDate {
+export function parseDate(dateString: string): { date: Date; hasTime: boolean } {
   const trimmedDate = dateString.trim();
   
-  // Try parsing with time and optional timezone (YYYY-MM-DD HH:MM [TZ])
+  // Try parsing with time (YYYY-MM-DD HH:MM)
   const fullPattern = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?:\s+([A-Za-z0-9+-:]+))?$/;
   const fullMatch = trimmedDate.match(fullPattern);
   
@@ -19,28 +19,19 @@ export function parseDate(dateString: string): ParsedDate {
     const [year, month, day, hours, minutes] = [yearStr, monthStr, dayStr, hoursStr, minutesStr]
       .map(Number);
     
-    let date = new Date(year, month - 1, day, hours, minutes);
-    
-    // Convert to UTC if timezone specified
-    if (timezone) {
-      date = convertToUTC(date, timezone);
-    } else {
-      // If no timezone, assume UTC
-      date = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    // Validate ranges
+    if (month < 1 || month > 12) throw new ValidationError('Month must be between 1 and 12');
+    if (day < 1 || day > 31) throw new ValidationError('Day must be between 1 and 31');
+    if (hours < 0 || hours > 23) throw new ValidationError('Hours must be between 0 and 23');
+    if (minutes < 0 || minutes > 59) throw new ValidationError('Minutes must be between 0 and 59');
+
+    // Create date and validate it's valid
+    const date = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    if (date.getUTCMonth() !== month - 1) {
+      throw new ValidationError('Invalid date for the given month');
     }
-    
-    // Validate the parsed values match the input (catches invalid dates like 2024-02-31)
-    if (
-      date.getUTCFullYear() === year &&
-      date.getUTCMonth() === month - 1 &&
-      date.getUTCDate() === day &&
-      date.getUTCHours() === hours &&
-      date.getUTCMinutes() === minutes
-    ) {
-      return { date, hasTime: true, timezone };
-    }
-    
-    throw new ValidationError('Invalid date/time values');
+
+    return { date, hasTime: true };
   }
   
   // Try parsing date only (YYYY-MM-DD)
@@ -51,22 +42,21 @@ export function parseDate(dateString: string): ParsedDate {
     const [, yearStr, monthStr, dayStr] = dateMatch;
     const [year, month, day] = [yearStr, monthStr, dayStr].map(Number);
     
+    // Validate ranges
+    if (month < 1 || month > 12) throw new ValidationError('Month must be between 1 and 12');
+    if (day < 1 || day > 31) throw new ValidationError('Day must be between 1 and 31');
+
+    // Create date and validate it's valid
     const date = new Date(Date.UTC(year, month - 1, day));
-    
-    // Validate the parsed values match the input
-    if (
-      date.getUTCFullYear() === year &&
-      date.getUTCMonth() === month - 1 &&
-      date.getUTCDate() === day
-    ) {
-      return { date, hasTime: false };
+    if (date.getUTCMonth() !== month - 1) {
+      throw new ValidationError('Invalid date for the given month');
     }
-    
-    throw new ValidationError('Invalid date values');
+
+    return { date, hasTime: false };
   }
   
   throw new ValidationError(
-    'Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM'
+    'Invalid date format. Expected YYYY-MM-DD or YYYY-MM-DD HH:MM [TZ]'
   );
 }
 
