@@ -49,8 +49,14 @@ merged: https://github.com/org/repo/pull/123
 ```
 ## MERGE REQUIREMENTS:
 * after: 2024-01-15
-* merged: https://github.com/org/repo/pull/123
-* merged: https://github.com/org/repo/pull/456
+* after: https://github.com/org/repo/pull/123
+* after: https://github.com/org/repo/pull/456
+```
+
+You can also use tags in the description:
+```
+[after: 2024-01-15]
+[after: https://github.com/org/repo/pull/123]
 ```
 
 ### 3. Commit Messages (Lowest Priority)
@@ -60,7 +66,12 @@ feat: implement new feature
 
 ## MERGE REQUIREMENTS:
 * after: 2024-01-15
-* merged: https://github.com/org/repo/pull/123
+* after: https://github.com/org/repo/pull/123
+```
+
+You can also use tags in commit messages:
+```
+feat: implement new feature [after: 2024-01-15] [after: https://github.com/org/repo/pull/123]
 ```
 
 ## Requirements Format

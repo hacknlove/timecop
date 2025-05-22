@@ -4,8 +4,8 @@ import { MergeRequirement } from '../types';
 
 const REQUIREMENT_SECTION = '## MERGE REQUIREMENTS:';
 const REQUIREMENT_PATTERNS = {
-  DATE: /^\s*\*\s*after:\s*(.+)\s*$/,
-  DEPENDENCY: /^\s*\*\s*merged:\s*(.+)\s*$/,
+  LINE: /^\s*\*\s*after:\s*(.+)\s*$/,
+  TAG: /\[after:\s*(.+?)\]/g,
 } as const;
 
 export async function collectFromDescription(
@@ -30,7 +30,32 @@ export async function collectFromDescription(
 
     const description = pullRequest.body || '';
 
-    // Find requirements section
+    // First, collect all tag-based requirements from the entire description
+    const tagMatches = description.matchAll(REQUIREMENT_PATTERNS.TAG);
+    for (const match of tagMatches) {
+      const value = match[1].trim();
+      core.debug(`Found tag requirement: ${value}`);
+
+      // Check if the value is a PR URL
+      if (value.includes('github.com')) {
+        requirements.push({
+          type: 'dependency',
+          source: 'description',
+          value,
+          priority: 2,
+        });
+      } else {
+        // Assume it's a date
+        requirements.push({
+          type: 'date',
+          source: 'description',
+          value,
+          priority: 2,
+        });
+      }
+    }
+
+    // Then process the requirements section if it exists
     const sectionIndex = description.indexOf(REQUIREMENT_SECTION);
     if (sectionIndex === -1) {
       core.debug('No requirements section found in PR description');
@@ -55,29 +80,29 @@ export async function collectFromDescription(
         break;
       }
 
-      // Check for date requirement
-      const dateMatch = line.match(REQUIREMENT_PATTERNS.DATE);
-      if (dateMatch) {
-        core.debug(`Found date requirement: ${dateMatch[1]}`);
-        requirements.push({
-          type: 'date',
-          source: 'description',
-          value: dateMatch[1].trim(),
-          priority: 2,
-        });
-        continue;
-      }
+      // Check for requirement
+      const match = line.match(REQUIREMENT_PATTERNS.LINE);
+      if (match) {
+        const value = match[1].trim();
+        core.debug(`Found requirement: ${value}`);
 
-      // Check for dependency requirement
-      const dependencyMatch = line.match(REQUIREMENT_PATTERNS.DEPENDENCY);
-      if (dependencyMatch) {
-        core.debug(`Found dependency requirement: ${dependencyMatch[1]}`);
-        requirements.push({
-          type: 'dependency',
-          source: 'description',
-          value: dependencyMatch[1].trim(),
-          priority: 2,
-        });
+        // Check if the value is a PR URL
+        if (value.includes('github.com')) {
+          requirements.push({
+            type: 'dependency',
+            source: 'description',
+            value,
+            priority: 2,
+          });
+        } else {
+          // Assume it's a date
+          requirements.push({
+            type: 'date',
+            source: 'description',
+            value,
+            priority: 2,
+          });
+        }
       }
     }
 
